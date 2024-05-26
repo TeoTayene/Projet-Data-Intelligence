@@ -128,7 +128,7 @@ int main( ) {
     printf("\t\t\t\t\tecriture \n");
     
     // boucle sur chaque ligne 
-    int iMove; //i pour aller dans chaque 15 dossiers de 24 subs
+    int iMove = 1; //i pour aller dans chaque 15 dossiers de 24 subs
     int index = 1; // numéro de ligne (pk pas utiliser nblignes ?)
     int oldindex =1;
 

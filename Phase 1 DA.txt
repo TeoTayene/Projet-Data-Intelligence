@@ -1,0 +1,151 @@
+
+module(estAberrant;checkValue,indexAxe;estAberrant)
+---*
+if ( checkValue > ABERENT_DATA[indexAxe][0].valeurs +(ABERENT_DATA[indexAxe][1].valeurs*3) || checkValue < ABERENT_DATA[indexAxe][0].valeurs-(ABERENT_DATA[indexAxe][1].valeurs*3))
+estAberrant == true
+else 
+estAberrant == false 
+endif
+-----
+
+module(phase1;;)
+---*
+path = ARRAY[128] = "dws_1/sub_1.csv";
+pathsMove = ARRAY[15][16] = = {"dws_1/","dws_2/","dws_11/","jog_9/","jog_16/","sit_5/","sit_13/","std_6/","std_14/","ups_3/","ups_4/","ups_12/","wlk_7/","wlk_8/","wlk_15/" };
+lastMove = ARRAY[4] = " "
+subTab = ARRAY[24][4]
+moveNumber = 0
+ligne = ARRAY[2048]
+valeurs = ARRAY[3]
+
+subFile = ouverture "data_aberrant.csv" en lecture ecriture 
+
+iSub = 0
+
+if ( subFile == Null)
+sortir "Cannot open file1 "
+else 
+obtenir ligne // dans fichier
+
+while ( iSub < ligne )
+module(obtenirDonnéesSub ;subTab;subTab)
+iSub++
+endwhile
+
+newFile = creation "trainSet.csv" en lecture ecriture 
+testSet = creation "testSet.csv" en lecture ecriture 
+
+if ( subnewFile or testSet == Null)
+sortir "Cannot open file"
+else
+newFile = "Mouvement,Genre,Index,Vacceleration "
+testSet = " Mouvement,Genre,Index,Vacceleration "
+
+
+nbLignes = 0
+iMove = 1
+index = 1
+oldindex = 1
+
+if (subTab[iSub][3] !=  "Homme")
+newFile = "femme", index
+test= "femme", index
+else 
+newFile = "homme", index
+test = "homme", index
+endif
+
+while ( iMove < 15)
+iSub = 0 
+while (iSub < 24)
+
+
+if ( pathsMoves[iMove] != lastMove)
+lastMove == pathsMoves[iMove]
+moveNumber ++;
+endif
+
+pathsMoves[iMove] == ouverture "%ssub_%d.csv " en ecriture , pathsMoves[iMove], iSub+1
+inputFile[0] = ouverture "path" en lecture 
+if (inputFile[0] == NULL) 
+sortir "Cannot open file " 
+endif
+
+ValeurCherche = 0
+caractere = 0
+iCara = 91
+
+while (ligne[0] != '\\' && iCara < 300)
+  
+module(ObtenirLigne;ligne,inputFile[0];inputFile[0])
+caractere  = inputFile[0] 
+ if (caractere == '\n')
+module(ObtenirLigne;ligne,inputFile[0];inputFile[0])
+token = obtenir la ligne
+token = ValeurCherche
+sortir ValeurCherche
+iCara = 9999
+endif
+iCara++
+endwhile
+
+error = false 
+iv0 = 0
+module(ObtenirLigne;ligne,inputFile[0];inputFile[0])
+
+while(inputFile[0]!= null)
+module(ObtenirLigne;ligne,inputFile[0];inputFile[0])
+iToken = 1
+
+if(nbLignes < ValeurCherche-((ValeurCherche/100)*10))
+inputFile[1] = newFile
+else
+inputFile[1] = testSet
+endif
+
+token = module(ObtenirLigne;ligne;ligne)
+
+while ( token != null)
+if (iToken < 10)
+valeurs[iV] = token
+estAbarrant = module(estAberrant;valeurs[iV],iV;)
+if (estAbarrant == true)
+nbAberrants[iV] ++
+ error=true
+endif
+iV++
+
+if ( iV == 3)
+error = false 
+else
+sortir inputFile[1]
+nbVaccIndex ++
+Vacc[index]++
+endif
+
+token = module(ObtenirLigne;;)
+iToken++
+ if (oldindex != index)
+sortir newFile,testSet
+iN++
+oldindex = index
+endif
+nbLignes++
+endwhile
+ nbError += nbAberrants[0] + nbAberrants[1] +nbAberrants[2]
+sortir bAberrants[0] + nbAberrants[1] +nbAberrants[2]
+
+inputFile[0] = fermer le fichier
+iSub++
+index++
+endwhile
+iMove++
+endwhile
+endwhile
+endwhile
+endif
+endif 
+aberrantValues = fermer fichier 
+newFile = fermer fichier 
+testSet = fermer fichier 
+------
