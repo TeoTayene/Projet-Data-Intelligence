@@ -1,0 +1,100 @@
+module(main;;)
+---*
+
+ XECARTTYPE =  0.38875666
+ YECARTTYPE = 0.61937128
+ ZECARTTYPE = 0.4300345
+
+XMOYENNE  = 0.00096087
+ YMOYENNE  = 0.05525659
+ZMOYENNE = 0.0352192
+
+path = ARRAY [128] 
+path = "dws_1/sub_1.csv"
+pathsMoves = ARRAY [15][16]
+pathsMoves = {"dws_1/", "dws_2/", "dws_11/", "jog_9/", "jog_16/", "sit_5/", "sit_13/", "std_6/", "std_14/", "ups_3/", "ups_4/", "ups_12/", "wlk_7/", "wlk_8/", "wlk_15/"}
+lastMove = ARRAY [4]
+lastMove =  "    "
+subTab = ARRAY [24][3]
+moveNumber = 0
+ligne = ARRAY[2048]
+valeurs = ARRAY[3]
+iMove = 0
+
+valeurAberante = ouvrire "Valeur_Aberante.csv" en mode écriture
+
+
+if ( valeurAberante == NULL)
+    sortir "Erreur: Fichier non trouvé1"
+else
+    while(iMove< 15)
+        iSub =  0
+
+        while (iSub < 24)
+              
+              if (pathsMoves[iMove] != lastMove )
+                  pathsMoves[iMove] = lastMove
+                  moveNumber++
+                  endif
+
+            pathsMoves[iMove] = pathsMoves[iMove] + iSub + 1  
+           path = Ouvrir  "%ssub_%d.csv " le fichier path en mode lecture et le stocker dans inputFile[0]
+
+            if (inputFile[0] == NULL)
+                sortir "Impossible d'ouvrir le fichier"
+            else 
+
+                module(PasseUneLigne;ligne;)
+                while(ligne)
+                    iacc = 0
+                    module(ExtraireLignedansToken;ligne,token;token)
+                    while(iacc < 9)
+                        module(ExtraireLignedansToken;ligne,token;token)
+                        iacc ++
+                    endwhile
+
+                 valeurs[0] = ligne[0]
+                 valeurs[1] = ligne[1]
+                 valeurs[2] = ligne[2]
+                  estAberrante1 = 
+module(estAberrante; valeurs[0], XMOYENNE, XECARTTYPE;)
+                  estAberrante2 = 
+module(estAberrante;valeurs[1], YMOYENNE, YECARTTYPE;)
+                  estAberrante3 =
+ module(estAberrante;valeurs[2], ZMOYENNE, ZECARTTYPE;)
+                    if( estAberrante1 or estAberrante2 or estAberrante3  ) :
+                       valeursAberante = ecrire dans "valeursAberante.csv" 
+                        if (estAberrante1) :
+                           valeursAberante = ecrire dans "valeursAberante.csv" la valeur de X
+                            nbValeursAberrantes ++
+                        else (estAberrante2) :
+                            valeursAberante = ecrire dans "valeursAberante.csv" la valeur de Y
+                           nbValeursAberrantes ++
+                        else (estAberrante3) :
+                          valeursAberante = ecrire dans "valeursAberante.csv" la valeur de Z
+                            nbValeursAberrantes ++
+                        endif
+                        valeursAberante = ecrire dans "valeursAberante.csv" une nouvelle ligne
+                    endif
+                endwhile
+
+                 inputFile[0] = Fermer le fichier
+                iSub++ 
+            endif
+        endwhile
+        iMove++
+    endwhile
+-----
+    sortir "Nombre de valeurs aberrantes: ", nbValeursAberrantes
+   valeursAberante = Fermer le fichier 
+endif
+
+module(estAberrante;valeur, moyenne, écartType;estAberante)
+---*
+module(CalculerZscore;valeur, moyenne, écartType;valeur, moyenne, écartType)
+if( zScore > à 3.0 OR zScore < -3.0 )
+    estAberante = vrai
+else:
+    estAberante = faux
+endif
+-----
