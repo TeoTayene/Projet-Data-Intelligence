@@ -1,0 +1,72 @@
+
+module(main;;)
+---*
+fTrainSet  = ouverture du fichier "trainSet.csv" en mode lecture
+fiModele = ouverture du fichier "fiModele.csv" en mode écriture
+ligne =  ARRAY [13*1010]
+totalValues = ARRAY [6][600] = 0
+nbLignesMove = ARRAY [6] = 0
+
+
+if ( fTrainSet == NULL)
+        sortir  "Cannot open trainSet "
+if ( fiModele == NULL) 
+     sortir "Cannot open fiModele" 
+else
+    sortir "Fichiers ouverts"
+     module(PasseUneLigne;ligne;ligne)
+    iMove = 1
+    index = 0
+    iLigne =1
+
+    while (iMove <= 6 AND index < 366)
+        sortir "Début d'un nouveau mouvement"
+
+        iOldMove = iMove
+        
+        while( iOldMove == iMove AND module(ObtenirLigne;ligne;ligne))
+            sortir fTrainSet
+            module( Extrairetoken;token;valeurMove)
+            module( Extrairetoken;token;token)
+
+            if (token.caractere == 'H' or'F' AND valeurMove == iMove  or valeurMove == iMove + 1)
+                iLigne++
+                index++
+                iMove  = valeurMove
+                module( Extrairetoken;token;token)
+                iValue = 0
+
+                while( iValue < à 600 AND token != NULL)
+                    valueAcc = token 
+                     totalValues[iMove - 1][iValue] = valueAcc 
+                    module( Extrairetoken;token;token)
+                    iValue++ 
+                endhwhile
+            endif
+        endwhile
+
+        sortir "Passer au mouvement suivant"
+
+    endwhile
+
+    nbLignesMove[0] --
+    nbLignesMove[iMove-1] = iLigne++
+
+    move = 0
+    while (move < 6 )
+        value = 0
+        while(value < 600)
+           fiModele  = Écrire dans fiModele la moyenne des valeurs de totalValues pour le mouvement move
+            value++ 
+        endwhile
+        module(PasseUneLigne;fiModele,ligne;ligne)
+        move++
+    endwhile
+
+    sortir"Fin"
+
+  fiModele =  Fermer fiModele
+   fTrainSet = Fermer fTrainSet
+
+endif
+-----
