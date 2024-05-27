@@ -76,7 +76,7 @@ void displayResultsForEachClass(int *realClasses, int *estimateClasses, int nbTe
         }
     }
 
-    printf("Results for each class:\n");
+    printf("Results pour chaque :\n");
     for (int i = 0; i < NBMOVES; i++) {
         printf("Class %d: %d/%d correct (%.2f%%)\n", i + 1, correctCounts[i], totalCounts[i],
                100.0 * correctCounts[i] / totalCounts[i]);
@@ -90,11 +90,11 @@ void displayAccuracy(int *realClasses, int *estimateClasses, int nbTests) {
             correct++;
         }
     }
-    printf("Overall accuracy: %.2f%%\n", 100.0 * correct / nbTests);
+    printf("precission globale : %.2f%%\n", 100.0 * correct / nbTests);
 }
 
 void displayClass(int *realClasses, int *estimateClasses, int nbTests) {
-    printf("Real vs Estimated Classes:\n");
+    printf("estimation vs réalité :\n");
     for (int i = 0; i < nbTests; i++) {
         printf("Real: %d, Estimated: %d\n", realClasses[i], estimateClasses[i]);
     }
