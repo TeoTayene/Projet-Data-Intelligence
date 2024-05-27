@@ -128,7 +128,7 @@ int main( ) {
     printf("\t\t\t\t\tecriture \n");
     
     // boucle sur chaque ligne 
-    int iMove = 1; //i pour aller dans chaque 15 dossiers de 24 subs
+    int iMove; //i pour aller dans chaque 15 dossiers de 24 subs
     int index = 1; // numéro de ligne (pk pas utiliser nblignes ?)
     int oldindex =1;
 
@@ -145,7 +145,7 @@ int main( ) {
     
     // prend le libellé du nouveau dossier move pour voir si on passe a un nouveau
     //  move et accrémenter moveNumber (6 moves diff donc moveNumber va valoir 6 a la fin 
-    if (strncmp(pathsMoves[iMove],lastMove , 3) != 0){
+	if (strncmp(pathsMoves[iMove],lastMove , 3) != 0){
         strncpy(lastMove, pathsMoves[iMove], 4);
         moveNumber ++;
     }
@@ -273,7 +273,7 @@ int main( ) {
     iMove++;
     }
     
-    fclose( aberrantValues );
+    fclose( aberrantValues);
     fclose( newFile );
     fclose( testSet );
     
@@ -301,5 +301,4 @@ bool isAberrant (double checkValue, int indexAxe){
 	//indexAxe vaut entre 0 et 2 (0 = x, 1 = y, 2 = z)
 	return (checkValue > ABERENT_DATA[indexAxe][0]+(ABERENT_DATA[indexAxe][1]*3) || checkValue < ABERENT_DATA[indexAxe][0]-(ABERENT_DATA[indexAxe][1]*3));
 }
-
 
