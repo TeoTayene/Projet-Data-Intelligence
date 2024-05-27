@@ -1,0 +1,257 @@
+module(model;;move,lastIndex,v_acc)
+module(ResultClass;;realClasses[NB_MOVE * 24],estimateClasses[NB_MOVE * 24],nbTeststotalSuccess[NB_MOVE],totalFails[NB_MOVE],patternMissAttractCount[NB_MOVE])
+
+module(main;;)
+---*
+NBTEMPS = 600
+NB_VALUES = 600
+NB_MOVE = 6
+
+tabTolerance[NB_MOVE] = {1, 1, 1, 1, 1, 1}
+bestTolerance[NB_MOVE]
+bestRate = 0.0
+
+
+fTestSet = ouverture du fichier "testSet.csv" en mode lecture
+fFiModele = ouverture du fichier "fiModele.csv" en mode lecture
+
+if ( fTestSet == NULL ou fFiModele == NULL)
+    if( fTestSet est NULL)
+        afficher "Impossible d'ouvrir testSet.csv"
+    else
+        afficher "Impossible d'ouvrir fiModele.csv"
+    endif
+    sortir -1
+else
+    afficher "Fichiers ouverts"
+    modelsPattern = ARRAY[6]
+    modelsTest = ARRAY[24*6]
+
+    module(convertFiletoTablePattern; fFiModele; modelsPattern)
+    module(convertFiletoTableTestSet; fTestSet; modelsTest)
+
+    module(filter; modelsPattern; modelsTest; resultats; 0.1)
+    module(displayStats; resultats)
+
+   fTestSet = fermer fTestSet
+   fFiModele = fermer fFiModele
+endif
+----- 
+
+# Fonction pour convertir le fichier en tableau de modèles de pattern
+module(convertFiletoTablePattern;file;models)
+---*
+    buffer = ' '
+    index = 0
+
+   while (module(obtenirLigne;buffer ;buffer ) AND index < NB_MOVE)
+        module(ObtenirToken;buffer;token)
+        if(token != NULL)
+            models[index].move = token
+            valIndex = 0
+
+            while (module(tokenEstNul;token;token) valIndex < NB_VALUES)
+                models[index].v_acc[valIndex++] = atof(token)
+            endwhile
+        endif
+        index++
+    endwhile
+-----
+
+# Fonction pour convertir le fichier en tableau de modèles de test
+module(convertFiletoTableTestSet;file; models)
+---*
+    buffer = ' '
+    index = 0
+    module(ObtenirLigne;buffer,ligne;ligne)
+
+    while(module(ObtenirLigne;buffer,ligne;ligne) ET index < 360)
+        token = buffer
+        if(token != NULL)
+            nbMove = token
+            subIndex = 0
+            valIndex = 0
+            
+            module(ObtenirToken;token;token)
+             module(ObtenirToken;token;token)
+            subIndex = token
+            models[((nbMove-1)*24) +subIndex-1].move = nbMove
+            
+            valIndex = models[((nbMove-1)*24) +subIndex-1].lastIndex
+            while (module(ObtenirToken;token;token) != NULL ET valIndex < NB_VALUES)
+                models[((nbMove-1)*24) +subIndex-1].v_acc[valIndex++] = token
+            endwhile
+            models[((nbMove-1)*24) +subIndex-1].lastIndex = valIndex
+        else
+            afficher "Arrêt à l'index", index
+        endif
+        index++
+   endwhile
+-----
+
+# Fonction pour calculer la distance euclidienne
+module(euclideanDistance;e, p, length;sum  )
+---*
+    sum = 0.0
+    iSum = 0
+    while( i < length-1)
+        diff = e[i] - p[i]
+        sum += diff * diff
+    iSum ++
+    endwhile
+    sum = 
+    module(racineCarré;sum;sum)
+-----
+
+# Fonction pour trouver le modèle le plus proche
+module(findClosestModel;models, testValues, rangsValues;closestIndex + 1)
+---*
+    closestIndex = -1
+    minDistance = HV
+    i = 0
+    while (i < NB_MOVE-1)
+        distance = 
+module(euclideanDistance;models[i].v_acc, testValues, NB_VALUES;)
+        distance *= * tabTolerance[i]
+        rangsValues[i] = distance
+        if(distance < minDistance)
+            minDistance = distance
+            closestIndex = i
+        endif
+    i++
+    endwhile
+-----
+
+# Fonction pour calculer le taux de succès
+module (rateSuccess;pattern, test, res;succes)
+---*
+    totalSuccess = 0
+    totalFails = 0
+
+    initialiser res.totalSuccess = 0
+    res.totalFails = 0 
+    res.patternMissAttractCount = 0
+    i = 0
+    while (i < NB_MOVE * 24 - 1)
+        déclarer rangsValues[NB_MOVE]
+        guessedPattern = findClosestModel(pattern, test[i].v_acc, rangsValues)
+
+        res.realClasses[i] = test[i].move
+        res.estimateClasses[i] = guessedPattern
+
+        if(guessedPattern == test[i].move)
+            res.totalSuccess[test[i].move - 1]++
+            totalSuccess++
+        else
+            res.totalFails[test[i].move - 1]++
+            res.patternMissAttractCount[guessedPattern - 1]++
+            totalFails++
+        endif
+    i++
+    endwhile
+
+    res.nbTests = totalSuccess + totalFails
+    succes = (totalSuccess / res.nbTests) * 100
+-----
+
+# Fonction pour calculer le taux de tolérance
+module(toleranceRate;res;count )
+    if(res.nbTests == 0)
+    count = 0
+    else 
+    iTest = 0
+    while(i < res.nbTests - 1)
+        if(res.realClasses[i] != res.estimateClasses[i])
+            count++
+    endwhile
+    count = (count / res.nbTests) * 100.0
+    endif
+-----
+
+# Fonction pour filtrer les modèles
+module (filter;modelsPattern, modelsTest, resultClass, step;)
+---*
+    loopMax = 1.5
+    margin = step * loopMax
+    start = ARRAY [NB_MOVE]
+    end = ARRAY[NB_MOVE]
+    iMove = 0
+    while(i < NB_MOVE - 1)
+        start[i] = tabTolerance[i] - margin
+        end[i] = tabTolerance[i] + margin
+   endwhile
+
+   move = ARRAY[NB_MOVE]
+    move[0] =start[0]
+    while (move[0] de start[0] < end[0] +=step))
+      move[1] = start[1]
+        while (move[1] de start[1]  < end[1] += step)
+          move[2] = start[2]
+            while (move[2] de start[2] < end[2] += step)
+              move[3] = start[3]
+                while (move[3] de start[3] à end[3] += step)
+                  move[4] = start[4]
+                     while (move[4] de start[4] <end[4] += step)
+                      move[5] = start[5]
+                        while (move[5] de start[5] <end[5] += step)
+                            while chaque i de 0 à NB_MOVE - 1
+                                tabTolerance[i] = move[i]
+                            endwhile
+                            taux = 
+                            module(rateSuccess;modelsPattern, modelsTest, resultClass;)
+                            if (taux > bestRate)
+                                bestRate = taux
+                                bestTolerance = tabTolerance
+                            endif
+                            endwhile
+                        endwhile
+                    endwhile
+               endwhile
+           endwhile
+       endwhile
+    tabTolerance = bestTolerance 
+    module(rateSuccess;modelsPattern, modelsTest, resultClass;bestTolerance )
+-----
+
+# Fonction pour afficher les statistiques
+module(displayStats;results;)
+---*
+    if(!results)
+        sortir "Erreur: Pas de données de résultats fournies."
+       
+   else
+
+    globalSuccess = 0
+    globalFail = 0
+    globalTotal = 0
+
+    sortir "Statistiques :"
+    sortir "--------------"
+      iMove = 0
+    while (iMove < NBMOVE - 1)
+        total = results.totalSuccess[i] + results.totalFails[i]
+        pourcentage = (total != 0) ? (results.totalSuccess[i] / total * 100) : 0
+
+        sortir "Mouvement", i + 1, ":"
+        sortir "  - Succes :", results.totalSuccess[i]
+        sortir "  - echecs :", results.totalFails[i]
+        sortir "  - Total :", total
+        sortir "  - Pourcentage de succes :", pourcentage, "%"
+        sortir "  - Attraction :", results.patternMissAttractCount[i]
+        sortir ""
+
+        globalSuccess += results.totalSuccess[i]
+        globalFail += results.totalFails[i]
+        globalTotal += total
+      endwhile
+    endif
+    if (globalTotal != 0)
+    pourcentageGlobal = (globalSuccess / globalTotal * 100) 
+    else
+    pourcentageGlobal = 0
+    sortir "Taux de succes global :", pourcentageGlobal, "%", "(", globalSuccess, "/", globalTotal, ")"
+    endif
+-----
+
+
+
