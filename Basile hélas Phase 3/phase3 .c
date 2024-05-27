@@ -36,51 +36,13 @@ struct ResultClass
 	
 };
 
-
-
-
-void displayModels(struct model *models);
-void displayModels2(struct model *models);
 void convertFiletoTable(FILE *file, struct model *models);
 void convertFiletoTable2(FILE *file, struct model *models);
 float rateSuccess (struct model  *modelsPattern,struct model  *modelsTest,struct ResultClass *resultClass);
 void displayStats(struct ResultClass *results);
 void bestFilterFinder(struct model *modelsPattern, struct model *modelsTest, struct ResultClass *resultClass,double step);
-
-
-
-double euclideanDistance(const double *v1, const double *v2, int length) {
-    double sum = 0.0;
-    int i = 0;
-    while ( i < length) {
-        double diff = v1[i] - v2[i];
-        sum += diff * diff;
-        i++;
-    }
-    return sqrt(sum);
-}
-
-int findClosestModel(struct model *models, double *testValues,double *rangsValues) {
-    int closestIndex = -1;
-    double minDistance = INFINITY; // Utilise INFINITY défini dans <math.h>
-	
-	int i = 0;
-    while( i < NB_MOVE) {
-    	//printf("-%d=|",i);
-        double distance = euclideanDistance(models[i].v_acc, testValues, NB_VALUES)*tabTolerance[i];
-        rangsValues[i] = distance;
-        if (distance < minDistance) {
-            minDistance = distance;
-            closestIndex = i;
-            
-        }
-        i++;
-    }
-    return closestIndex+1;
-}
-
-// Vous devriez lire les valeurs de testSet.csv et les stocker dans un tableau,
-// puis appeler findClosestModel pour chaque enregistrement.
+double euclideanDistance(const double *v1, const double *v2, int length);
+int findClosestModel(struct model *models, double *testValues,double *rangsValues);
 
 
 int main(){
@@ -95,36 +57,27 @@ int main(){
         return -1;
     }
     
-    printf("1");
-    
     struct model  modelsPattern [NB_MOVE];
 	convertFiletoTablePattern(fFiModele,modelsPattern);
-	
-	//displayModels(modelsPattern);
-	
-	 printf("2\n");
+	 
 	struct model  modelsTest [6*24];
 	convertFiletoTableTestSet(fTestSet,modelsTest);
+	
 				
-	 printf("3\n");
-	// Display the models
-	//displayModels(models);
-	//displayModels2(modelsTest);
-	
-	//------------------STAT-----------------------
-	
-	//rateSuccess (modelsPattern,modelsTest);
 	struct ResultClass resultClass;
 
 	rateSuccess(modelsPattern, modelsTest, &resultClass);
 	displayStats( &resultClass);
 	
+	printf("\nTapez 'y' pour trouver un filtre qui améliore les résultats ou autre si vous voulez passer\n");
+	char response  = getchar();
 	
+	if (response = 'y') {
 	double bastRate =0;
 	int stagne =0;
 	double step =0.245676;
 	
-	while (stagne <7){
+	while (stagne <6){
 	
 		bestFilterFinder(modelsPattern, modelsTest, &resultClass,step);
 		
@@ -146,7 +99,7 @@ int main(){
 	}
 	
 	displayStats( &resultClass);
-	
+	}
 	
 	
     fclose(fTestSet);
@@ -236,11 +189,6 @@ void bestFilterFinder(struct model *modelsPattern, struct model *modelsTest, str
 
 
 void displayStats(struct ResultClass *results) {
-    if (!results) {
-        printf("Error: No results data provided.\n");
-        return;  // Early return if the passed pointer is null.
-    }
-
     int i = 0;
     int globalSuccess = 0;
     int globalFail = 0;
@@ -351,8 +299,6 @@ void convertFiletoTableTestSet(FILE *file, struct model *models) {
             
 			valIndex = models[((nbMove-1)*24) +subIndex-1].lastIndex;
             while ((token = strtok(NULL, ",")) != NULL && valIndex < NB_VALUES) {
-            //printf("  |--| %d            (Move: %d Sub :%d (%d)                  fichier -> %d\n",((nbMove-1)*24) +subIndex, nbMove,subIndex,valIndex,index);	
-                //models[index].v_acc[valIndex++] = atof(token);
                 sscanf(token, "%lf", &models[((nbMove-1)*24) +subIndex-1].v_acc[valIndex]);
             	valIndex++;
 			}
@@ -365,34 +311,34 @@ void convertFiletoTableTestSet(FILE *file, struct model *models) {
     }
 }
 
-void displayModels(struct model *models) {
-	
-	int i = 0;
-    while ( i < 6) {
-        printf("Move %d (%d): ", models[i].move,i);
-        int j = 0;
-        while ( j < NB_VALUES ) {
-            printf("(%d):%.10lf ",j , models[i].v_acc[j]);
-            j++;
-        }
-        printf("\n");
+double euclideanDistance(const double *v1, const double *v2, int length) {
+    double sum = 0.0;
+    int i = 0;
+    while ( i < length) {
+        double diff = v1[i] - v2[i];
+        sum += diff * diff;
         i++;
     }
+    return sqrt(sum);
 }
 
-void displayModels2(struct model *models) {
+int findClosestModel(struct model *models, double *testValues,double *rangsValues) {
+    int closestIndex = -1;
+    double minDistance = INFINITY; // Utilise INFINITY défini dans <math.h>
 	
 	int i = 0;
-    while ( i < 24*6) {
-        printf("Move %d (%d): ", models[i].move,i);
-        int j = 0;
-        while ( j < NB_VALUES ) {
-            printf("(%d):%.10lf ",j , models[i].v_acc[j]);
-            j++;
+    while( i < NB_MOVE) {
+    	//printf("-%d=|",i);
+        double distance = euclideanDistance(models[i].v_acc, testValues, NB_VALUES)*tabTolerance[i];
+        rangsValues[i] = distance;
+        if (distance < minDistance) {
+            minDistance = distance;
+            closestIndex = i;
+            
         }
-        printf("\n");
         i++;
     }
+    return closestIndex+1;
 }
 
 
