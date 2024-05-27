@@ -1,0 +1,75 @@
+---* phase 3
+
+pFiModel = ouvrir "fiModel.csv" en lecture
+pFiTest = ouvrir "testSet.csv" en lecture
+
+if (!pFiModel or !pFiTes)
+exit(-1);
+endif
+
+struct model modelsPattern [NB_MOVE];
+struct model  modelsTest [6*24];
+
+module(convertFiletoTablePattern;pFiModel,*modelsPattern;)
+module(convertFiletoTableTestSet;pFiTest,*modelsTest ;)
+
+struct ResultClass resultClass;
+module(rateSuccess;modelsPattern, modelsTest,resultClass ;resultClass)
+
+module(displayStats;resultClass;)
+
+----
+
+module(convertFiletoTablePattern;file,models)
+---*
+char buffer[(13*NB_VALUES)+10];
+    int index = 0;
+
+    module(fgets; buffer, sizeof(buffer), file)
+    while (fgets(buffer, sizeof(buffer), file) != NULL && index < NB_MOVE)
+        char *token ;
+        module(strtok; buffer, ",";token)
+        if (token != NULL)
+            module(sscanf; token, "%d"; &models[index].move)
+            int valIndex = 0;
+
+            module(strtok; NULL, ",";token)
+            while ((token = strtok(NULL, ",")) != NULL && valIndex < NB_VALUES)
+                module(sscanf; token, "%lf"; &models[index].v_acc[valIndex])
+                valIndex++;
+            endwhile
+        endif
+        index++;
+    endwhile
+-----
+
+module(convertFiletoTableTestSet; file, models)
+---*
+char buffer[(13*3500)+30];
+int index = 0;
+module(fgets; buffer, sizeof(buffer), file)
+printf(" 2.1 ");
+while (fgets(buffer, sizeof(buffer), file) && index < 360)
+    char *token;
+    module(strtok; buffer, ","; token)
+    if (token != NULL)
+        int nbMove;
+        module(sscanf; token, "%d"; &nbMove)
+        int subIndex;
+        int valIndex = 0;
+        
+        module(strtok; NULL, ","; token)
+        module(strtok; NULL, ","; token)
+        
+        module(sscanf; token, "%d"; &subIndex)
+        models[((nbMove-1)*24) + subIndex - 1].move = nbMove;
+        
+        valIndex = models[((nbMove-1)*24) + subIndex - 1].lastIndex;
+        while ((token = strtok(NULL, ",")) != NULL && valIndex < NB_VALUES)
+            module(sscanf; token, "%lf"; &models[((nbMove-1)*24) + subIndex - 1].v_acc[valIndex])
+            valIndex++;
+        endwhile
+        models[((nbMove-1)*24) + subIndex - 1].lastIndex = valIndex;
+    endif
+    index++;
+endwhile
