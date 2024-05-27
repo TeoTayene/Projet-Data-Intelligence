@@ -183,7 +183,7 @@ module (filter;modelsPattern, modelsTest, resultClass, step;)
 
    move = ARRAY[NB_MOVE]
     move[0] =start[0]
-    while (move[0] de start[0] < end[0] +=step))
+    while (move[0] de start[0] < end[0] +=step)
       move[1] = start[1]
         while (move[1] de start[1]  < end[1] += step)
           move[2] = start[2]
